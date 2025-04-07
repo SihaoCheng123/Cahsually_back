@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -42,3 +43,13 @@ class UserSerializer(serializers.ModelSerializer):
         if "password" not in data or not data("password"):
             raise serializers.ValidationError({"password": "Password field is required"})
         return data
+
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        user = CustomUser(**validated_data)
+
+        if password:
+            user.password = make_password(password)
+
+        user.save()
+        return user
