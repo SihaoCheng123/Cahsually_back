@@ -26,7 +26,7 @@ class CreateIncomeView(APIView):
             )
 
         try:
-            data= request.data
+            data = request.data
             data["account"] = account.id
 
             serializer = IncomeSerializer(data=data)
