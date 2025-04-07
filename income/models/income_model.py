@@ -7,7 +7,7 @@ class Income(models.Model):
     concept = models.CharField(max_length=100, null=False, blank=False, verbose_name="Concept")
     amount = models.DecimalField(decimal_places=2, max_digits=10, verbose_name="Amount", null=False)
     date = models.DateTimeField()
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="income", verbose_name="Account from expense")
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="income", verbose_name="Account")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Creation date')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Last update')
 

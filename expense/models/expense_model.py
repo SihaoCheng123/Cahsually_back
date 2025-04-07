@@ -18,7 +18,7 @@ class Expense(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=10, verbose_name="Amount", null=False)
     date = models.DateTimeField()
     description = models.CharField(max_length=300, null=True, blank=True, verbose_name="Description")
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="expense", verbose_name="Account from expense")
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="expense", verbose_name="Account")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Creation date')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Last update')
 
