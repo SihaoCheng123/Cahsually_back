@@ -26,7 +26,6 @@ class RegisterView(APIView):
             is_staff = data.get("is_staff", False)
             is_superuser = data.get("is_superuser", False)
             age = data.get("age")
-            phone = data.get("phone")
             data["is_active"] = is_active
             data["is_staff"] = is_staff
             data["is_superuser"] = is_superuser

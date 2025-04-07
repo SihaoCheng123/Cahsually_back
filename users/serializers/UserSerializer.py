@@ -36,11 +36,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def validate_values(self, data):
-        if "name" not in data or not data("name"):
+        if "name" not in data or not data.get("name"):
             raise serializers.ValidationError({"name": "Name field is required"})
-        if "email" not in data or not data("email"):
+        if "email" not in data or not data.get("email"):
             raise serializers.ValidationError({"email": "Email field is required"})
-        if "password" not in data or not data("password"):
+        if "password" not in data or not data.get("password"):
             raise serializers.ValidationError({"password": "Password field is required"})
         return data
 

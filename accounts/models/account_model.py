@@ -1,3 +1,5 @@
+import secrets
+
 from django.db import models
 from users.models import CustomUser
 from django.utils.text import slugify
@@ -17,15 +19,10 @@ class Account(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            slug = slugify(self.name)
-            cont = 1
-
-            while Account.objects.filter(slug=slug).exists():
-                slug = f"{slug}-{cont}"
-                cont+=1
-
-            self.slug = slug
-
+            prov = secrets.token_urlsafe(16)
+            while Account.objects.filter(slug=prov).exists():
+                prov = secrets.token_urlsafe(16)
+            self.slug = prov
         super().save(*args, **kwargs)
 
     def __str__(self):
