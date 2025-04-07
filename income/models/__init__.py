@@ -1,0 +1,1 @@
+from .income_model import *
