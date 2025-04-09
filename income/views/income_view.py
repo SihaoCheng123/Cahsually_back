@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django.db import transaction
+from django.db.models import Sum
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, \
@@ -61,6 +64,44 @@ class GetUserIncomeListView(APIView):
             serializer = IncomeSerializer(incomes, many=True)
             return Response(
                 {"success": "Income list retrieved successfully", "data": serializer.data},
+                status=HTTP_200_OK
+            )
+        except CustomUser.DoesNotExist:
+            return Response(
+                {"error": "User not found", "data": None},
+                status=HTTP_404_NOT_FOUND
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": "Connection error", "data": f'error{e}'},
+                status=HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class GetIncomeListByMonthView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, slug):
+        try:
+            user = CustomUser.objects.get(slug=slug)
+
+            today = datetime.today()
+            current_month = today.month
+            current_year = today.year
+
+            incomes = Income.objects.filter(
+                account__users = user,
+                date__month = current_month,
+                date__year=current_year).order_by('-date')
+
+            total_income = incomes.aggregate(total=Sum('amount'))['total'] or 0
+
+            serializer = IncomeSerializer(incomes, many = True)
+            return Response(
+                {"success": "Income list retrieved by month",
+                 "data": {
+                     "total_income": total_income,
+                     "list": serializer.data
+                 }},
                 status=HTTP_200_OK
             )
         except CustomUser.DoesNotExist:

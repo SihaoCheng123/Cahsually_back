@@ -63,13 +63,14 @@ class DeleteAccountView(APIView):
 
 class GetAccountsByUser(APIView):
     permission_classes = [AllowAny]
-    def get(self, request, slug, HTTP_400_NOT_FOUND=None):
+    def get(self, request, slug):
 
         try:
             user = CustomUser.objects.get(slug=slug)
             accounts = [{
                 "name": account.name,
-                "balance": account.balance
+                "balance": account.balance,
+                "slug": account.slug
             }   for account in user.accounts.all()]
 
             return Response(
@@ -84,7 +85,7 @@ class GetAccountsByUser(APIView):
         except Exception as e:
             return Response(
                 {"error": "Connection error", "data": f"{e}"},
-                status=HTTP_400_NOT_FOUND
+                status=HTTP_500_INTERNAL_SERVER_ERROR
             )
 
 class GetOperationListView(APIView):

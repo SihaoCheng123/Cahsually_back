@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django.db import transaction
+from django.db.models import Sum
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, \
@@ -7,7 +10,9 @@ from rest_framework.views import APIView
 
 from accounts.models import Account
 from accounts.serializers import AccountSerializer
+from expense.models import Expense
 from expense.serializers import ExpenseSerializer
+from users.models import CustomUser
 
 
 class CreateExpenseView(APIView):
@@ -46,3 +51,42 @@ class CreateExpenseView(APIView):
                 {"error": "Connection error", "data": f'error{e}'},
                   status=HTTP_500_INTERNAL_SERVER_ERROR
              )
+
+class GetExpenseListByMonthView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, slug):
+
+        try:
+            user = CustomUser.objects.get(slug=slug)
+
+            today = datetime.today()
+            current_month = today.month
+            current_year = today.year
+
+            expenses = Expense.objects.filter(
+                account__users = user,
+                date__month = current_month,
+                date__year = current_year
+            ).order_by('-date')
+
+            total_expense = expenses.aggregate(total=Sum('amount'))['total'] or 0
+
+            serializer = ExpenseSerializer(expenses, many=True)
+            return Response(
+                {"success": "Expense list retrieved by month",
+                 "data": {
+                     "total_expense" : total_expense,
+                     "list" : serializer.data
+                 }}
+            )
+        except CustomUser.DoesNotExist:
+            return Response(
+                {"error": "User not found", "data": None},
+                status=HTTP_404_NOT_FOUND
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": "Connection error", "data": f'error{e}'},
+                status=HTTP_500_INTERNAL_SERVER_ERROR
+            )
