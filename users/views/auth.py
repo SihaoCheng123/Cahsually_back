@@ -86,7 +86,7 @@ class LoginView(APIView):
                 )
             else:
                 return Response(
-                    {"error": "Invalid password", "data": None},
+                    {"error": "Invalid credentials", "data": None},
                     status=HTTP_400_BAD_REQUEST
                 )
 

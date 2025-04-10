@@ -6,9 +6,11 @@ from decimal import Decimal
 
 class IncomeSerializer(serializers.ModelSerializer):
     account = serializers.PrimaryKeyRelatedField(queryset=Account.objects.all(), required=True)
+    account_name = serializers.CharField(source='account.name', read_only=True)
     class Meta:
         model = Income
         fields = '__all__'
+        extra_fields = ["account__name"]
 
     @staticmethod
     def validate_balance(value):

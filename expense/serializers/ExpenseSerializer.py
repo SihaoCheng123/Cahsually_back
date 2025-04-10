@@ -15,9 +15,11 @@ from users.models import CustomUser
 class ExpenseSerializer(serializers.ModelSerializer):
     account = serializers.PrimaryKeyRelatedField(queryset=Account.objects.all(), required=True)
     category = serializers.ChoiceField(choices=[(key, value) for key, value in CATEGORIES])
+    account_name = serializers.CharField(source='account.name', read_only=True)
     class Meta:
         model = Expense
         fields = '__all__'
+        extra_fields = ["account__name"]
 
     @staticmethod
     def validate_balance(value):

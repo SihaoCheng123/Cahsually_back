@@ -14,7 +14,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def validate_balance(value):
-        if value <= Decimal('0.00'):
+        if value <= 0.0:
             raise serializers.ValidationError("Positive balance only")
         return value
 
